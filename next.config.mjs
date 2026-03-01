@@ -5,9 +5,7 @@ const nextConfig = {
       dynamic: 30,
     },
   },
-
   serverExternalPackages: ["@node-rs/argon2"],
-
   images: {
     remotePatterns: [
       {
@@ -15,23 +13,23 @@ const nextConfig = {
         hostname: "utfs.io",
         pathname: `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*`,
       },
-
-      // ✅ Add Dicebear (avatars)
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
       {
         protocol: "https",
         hostname: "api.dicebear.com",
       },
     ],
+    dangerouslyAllowSVG: true,
   },
-
-  rewrites: () => {
-    return [
-      {
-        source: "/hashtag/:tag",
-        destination: "/search?q=%23:tag",
-      },
-    ];
-  },
+  rewrites: async () => [
+    {
+      source: "/hashtag/:tag",
+      destination: "/search?q=%23:tag",
+    },
+  ],
 };
 
 export default nextConfig;
