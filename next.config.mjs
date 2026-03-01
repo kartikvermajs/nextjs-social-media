@@ -5,7 +5,9 @@ const nextConfig = {
       dynamic: 30,
     },
   },
+
   serverExternalPackages: ["@node-rs/argon2"],
+
   images: {
     remotePatterns: [
       {
@@ -13,8 +15,15 @@ const nextConfig = {
         hostname: "utfs.io",
         pathname: `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/*`,
       },
+
+      // ✅ Add Dicebear (avatars)
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
+      },
     ],
   },
+
   rewrites: () => {
     return [
       {
