@@ -7,6 +7,7 @@ export async function GET() {
   const codeVerifier = generateCodeVerifier();
 
   const url = await google.createAuthorizationURL(state, codeVerifier, [
+    "openid",
     "profile",
     "email",
   ]);
