@@ -3,9 +3,11 @@ import prisma from "@/lib/prisma";
 import { getUserDataSelect } from "@/lib/types";
 
 export async function GET(
-  req: Request,
-  { params: { username } }: { params: { username: string } },
+  _req: Request,
+  context: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await context.params;
+
   try {
     const { user: loggedInUser } = await validateRequest();
 

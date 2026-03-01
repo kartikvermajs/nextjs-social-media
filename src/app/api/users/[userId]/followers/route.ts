@@ -3,9 +3,11 @@ import prisma from "@/lib/prisma";
 import { FollowerInfo } from "@/lib/types";
 
 export async function GET(
-  req: Request,
-  { params: { userId } }: { params: { userId: string } },
+  _req: Request,
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const { userId } = await context.params;
+
   try {
     const { user: loggedInUser } = await validateRequest();
 
@@ -49,9 +51,11 @@ export async function GET(
 }
 
 export async function POST(
-  req: Request,
-  { params: { userId } }: { params: { userId: string } },
+  _req: Request,
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const { userId } = await context.params;
+
   try {
     const { user: loggedInUser } = await validateRequest();
 
@@ -82,7 +86,7 @@ export async function POST(
       }),
     ]);
 
-    return new Response();
+    return new Response(null, { status: 200 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
@@ -90,9 +94,11 @@ export async function POST(
 }
 
 export async function DELETE(
-  req: Request,
-  { params: { userId } }: { params: { userId: string } },
+  _req: Request,
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const { userId } = await context.params;
+
   try {
     const { user: loggedInUser } = await validateRequest();
 
@@ -116,7 +122,7 @@ export async function DELETE(
       }),
     ]);
 
-    return new Response();
+    return new Response(null, { status: 200 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

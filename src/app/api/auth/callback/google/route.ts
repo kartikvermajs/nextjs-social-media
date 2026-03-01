@@ -12,8 +12,11 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
 
-  const storedState = cookies().get("state")?.value;
-  const storedCodeVerifier = cookies().get("code_verifier")?.value;
+  // ✅ FIX: await cookies()
+  const cookieStore = await cookies();
+
+  const storedState = cookieStore.get("state")?.value;
+  const storedCodeVerifier = cookieStore.get("code_verifier")?.value;
 
   if (
     !code ||
@@ -48,11 +51,14 @@ export async function GET(req: NextRequest) {
     if (existingUser) {
       const session = await lucia.createSession(existingUser.id, {});
       const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(
+
+      // ✅ FIX: use cookieStore
+      cookieStore.set(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes,
       );
+
       return new Response(null, {
         status: 302,
         headers: {
@@ -62,7 +68,6 @@ export async function GET(req: NextRequest) {
     }
 
     const userId = generateIdFromEntropySize(10);
-
     const username = slugify(googleUser.name) + "-" + userId.slice(0, 4);
 
     await prisma.$transaction(async (tx) => {
@@ -74,6 +79,7 @@ export async function GET(req: NextRequest) {
           googleId: googleUser.id,
         },
       });
+
       await streamServerClient.upsertUser({
         id: userId,
         username,
@@ -83,7 +89,9 @@ export async function GET(req: NextRequest) {
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(
+
+    // ✅ FIX: use cookieStore
+    cookieStore.set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes,
@@ -97,13 +105,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error(error);
+
     if (error instanceof OAuth2RequestError) {
-      return new Response(null, {
-        status: 400,
-      });
+      return new Response(null, { status: 400 });
     }
-    return new Response(null, {
-      status: 500,
-    });
+
+    return new Response(null, { status: 500 });
   }
 }
